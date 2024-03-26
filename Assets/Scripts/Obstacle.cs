@@ -6,12 +6,14 @@ public class Obstacle : MonoBehaviour
 {
     private void Start()
     {
-        transform.position = new Vector2(15, Random.Range(-ObstacleManager.instance.obstacleYLimit, ObstacleManager.instance.obstacleYLimit));
+        transform.position = new Vector2(15, Random.Range(-ObstacleManager.Instance.obstacleYLimit, ObstacleManager.Instance.obstacleYLimit));
     }
 
     private void Update()
     {
-        transform.Translate(Vector2.left * ObstacleManager.instance.obstacleSpeed * Time.deltaTime);
+        if (GameManager.Instance.gameOver) return;
+
+        transform.Translate(Vector2.left * ObstacleManager.Instance.obstacleSpeed * Time.deltaTime);
 
         if(transform.position.x < -15f)
         {

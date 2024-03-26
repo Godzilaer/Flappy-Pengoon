@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float score;
     [SerializeField] private float jumpStrength, gravity;
 
     private Rigidbody2D rb;
-    private bool gameStarted;
 
     private void Start()
     {
@@ -18,14 +15,12 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(!GameManager.Instance.gameOver && Input.GetKeyDown(KeyCode.Space))
         {
-            if(!gameStarted)
+            if(!GameManager.Instance.gameStarted)
             {
-                gameStarted = true;
+                GameManager.Instance.StartGame();
                 rb.gravityScale = gravity;
-                
-                StartCoroutine(ObstacleManager.instance.SpawnObstacles());
             }
 
             rb.velocity = Vector2.zero;
@@ -35,18 +30,17 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Obstacle"))
+        if(GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Obstacle"))
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.GameOver();
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Checkpoint"))
+        if (GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Checkpoint"))
         {
-            score++;
-            print(score);
+            GameManager.Instance.UpdateScore();
         }
     }
 }
