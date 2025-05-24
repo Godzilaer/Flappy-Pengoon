@@ -1,24 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
-{
+public class Player : MonoBehaviour {
     [SerializeField] private float jumpStrength, gravity;
 
     private Rigidbody2D rb;
 
-    private void Start()
-    {
+    private void Start() {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
-    {
-        if(!GameManager.Instance.gameOver && Input.GetKeyDown(KeyCode.Space))
-        {
-            if(!GameManager.Instance.gameStarted)
-            {
+    private void Update() {
+        if (GameManager.Instance.gameOver) {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) {
+            if (!GameManager.Instance.gameStarted) {
                 GameManager.Instance.StartGame();
                 rb.gravityScale = gravity;
             }
@@ -28,18 +25,14 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Obstacle"))
-        {
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Obstacle")) {
             GameManager.Instance.GameOver();
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Checkpoint"))
-        {
+    private void OnTriggerEnter2D(Collider2D collision) {
+        if (GameManager.Instance.gameStarted && collision.gameObject.CompareTag("Checkpoint")) {
             GameManager.Instance.UpdateScore();
         }
     }

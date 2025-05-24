@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private GameObject gameOverScreen;
-    [SerializeField] private Text scoreText, newHighScoreText, gameOverScoreText, highScoreText;
+    [SerializeField] private GameObject gameOverScreen, newHighScoreObj, greetingObj;
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private TextMeshProUGUI scoreText, gameOverScoreText, highScoreText;
     [SerializeField] private Button retryButton;
 
     public bool gameStarted, gameOver;
@@ -17,36 +17,37 @@ public class GameManager : MonoBehaviour
 
     private Coroutine spawnObstaclesCoroutine;
 
-    private void Awake()
-    {
-        if(Instance != null)
-        {
+    private void Awake() {
+        if (Instance != null) {
             Debug.LogError("More than one GameManager singleton");
+            Destroy(this);
         }
 
         Instance = this;
     }
 
-    private void Start()
-    {
+    private void Update() {
+        //Move camera so Penguin is on screen
+        float newCamX = Screen.width < 1000f ? 1920f / -Screen.width + 1f : 0f;
+        cameraTransform.position = new Vector3(newCamX, 0f, -10f);
+    }
+
+    private void Start() {
         retryButton.onClick.AddListener(Retry);
     }
 
-    public void UpdateScore()
-    {
+    public void UpdateScore() {
         score++;
         scoreText.text = score.ToString();
     }
 
-    public void StartGame()
-    {
+    public void StartGame() {
         gameStarted = true;
-
+        greetingObj.SetActive(false);
         spawnObstaclesCoroutine = StartCoroutine(ObstacleManager.Instance.SpawnObstacles());
     }
 
-    public void GameOver()
-    {
+    public void GameOver() {
         gameStarted = false;
         gameOver = true;
         StopCoroutine(spawnObstaclesCoroutine);
@@ -57,18 +58,29 @@ public class GameManager : MonoBehaviour
 
         int highScore = PlayerPrefs.GetInt("HighScore", 0);
 
-        if(score > highScore)
-        {
-            newHighScoreText.gameObject.SetActive(true);
+        if (score > highScore) {
+            
             highScore = score;
+            StartCoroutine(NewHighScoreAnimation());
         }
 
         highScoreText.text = "High Score: " + highScore;
         PlayerPrefs.SetInt("HighScore", highScore);
+        PlayerPrefs.Save();
     }
 
-    public void Retry()
-    {
+    private void Retry() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private IEnumerator NewHighScoreAnimation() {
+        WaitForSeconds wait = new(0.7f);
+           
+        while (true) {
+            newHighScoreObj.SetActive(true);
+            yield return wait;
+            newHighScoreObj.SetActive(false);
+            yield return wait;
+        }
     }
 }
