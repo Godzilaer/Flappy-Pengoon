@@ -4,6 +4,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private float jumpStrength, gravity;
 
     private Rigidbody2D rb;
+    private bool jumpRequest;
 
     private void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -20,8 +21,16 @@ public class Player : MonoBehaviour {
                 rb.gravityScale = gravity;
             }
 
+            jumpRequest = true;
+        }
+    }
+
+    private void FixedUpdate() {
+        if(jumpRequest) {
             rb.velocity = Vector2.zero;
             rb.AddForce(Vector2.up * jumpStrength);
+
+            jumpRequest = false;
         }
     }
 
