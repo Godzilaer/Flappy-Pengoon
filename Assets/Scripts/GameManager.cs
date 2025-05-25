@@ -26,12 +26,6 @@ public class GameManager : MonoBehaviour {
         Instance = this;
     }
 
-    private void Update() {
-        //Move camera so Penguin is on screen
-        float newCamX = Screen.width < 1000f ? 1920f / -Screen.width + 1f : 0f;
-        cameraTransform.position = new Vector3(newCamX, 0f, -10f);
-    }
-
     private void Start() {
         retryButton.onClick.AddListener(Retry);
     }
@@ -59,7 +53,7 @@ public class GameManager : MonoBehaviour {
         int highScore = PlayerPrefs.GetInt("HighScore", 0);
 
         if (score > highScore) {
-            
+
             highScore = score;
             StartCoroutine(NewHighScoreAnimation());
         }
@@ -75,7 +69,7 @@ public class GameManager : MonoBehaviour {
 
     private IEnumerator NewHighScoreAnimation() {
         WaitForSeconds wait = new(0.7f);
-           
+
         while (true) {
             newHighScoreObj.SetActive(true);
             yield return wait;

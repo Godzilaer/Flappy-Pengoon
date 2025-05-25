@@ -7,15 +7,15 @@ public class Parallax : MonoBehaviour {
         speed = transform.parent.GetComponent<ParallaxManager>().parallaxSpeed;
     }
 
-    private void Update() {
+    private void FixedUpdate() {
         if (!GameManager.Instance.gameStarted) {
             return;
         }
 
-        if (transform.position.x <= -40) {
+        if (transform.position.x <= -40f) {
             Destroy(gameObject);
         }
 
-        transform.Translate(speed * Time.deltaTime * Vector2.left);
+        transform.Translate(speed *  Vector2.left);
     }
 }
